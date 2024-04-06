@@ -31,7 +31,7 @@ toggleEraserButton.addEventListener('click', function() {
 });
 
 function startDrawing(evt) {
-    if (evt.button !== 0) return; // Only draw on left-click (button 0)
+    if (!((evt.pointerType == "mouse" && evt.button === 0) || evt.pointerType === "pen")) return;
 
     isDrawing = true;
 
@@ -47,8 +47,6 @@ function startDrawing(evt) {
 }
 
 function erasePath(eraserSegment) {
-    console.log(`erase from (${eraserSegment.start.x}, ${eraserSegment.start.y}) to (${eraserSegment.end.x}, ${eraserSegment.end.y})`);
-
     let paths = document.querySelectorAll('#canvasGroup path');
 
     paths.forEach(path => {
@@ -157,12 +155,12 @@ function draw(evt) {
 }
 
 function stopDrawing(evt) {
-    if (evt.button !== 0) return;
+    if (!((evt.pointerType == "mouse" && evt.button === 0) || evt.pointerType === "pen")) return;
     isDrawing = false;
 }
 
 function startPanning(evt) {
-    if (evt.button !== 2) return; // Only pan on right-click (button 2)
+    if (!((evt.pointerType == "mouse" && evt.button === 2) || evt.pointerType === "touch")) return;
     isPanning = true;
     startPoint = { x: evt.clientX, y: evt.clientY };
 }
@@ -182,7 +180,7 @@ function pan(evt) {
 }
 
 function stopPanning(evt) {
-    if (evt.button !== 2) return;
+    if (!((evt.pointerType == "mouse" && evt.button === 2) || evt.pointerType === "touch")) return;
     isPanning = false;
 }
 
@@ -205,17 +203,17 @@ function getSVGCoords(evt) {
     return pt.matrixTransform(svg.getScreenCTM().inverse());
 }
 
-svg.addEventListener("mousedown", startDrawing);
-svg.addEventListener("mousemove", draw);
-svg.addEventListener("mouseup", stopDrawing);
-svg.addEventListener("mouseleave", stopDrawing);
+svg.addEventListener("pointerdown", startDrawing);
+svg.addEventListener("pointermove", draw);
+svg.addEventListener("pointerup", stopDrawing);
+svg.addEventListener("pointerleave", stopDrawing);
 
 svg.addEventListener("wheel", zoom, { passive: false });
 
-svg.addEventListener("mousedown", startPanning);
-svg.addEventListener("mousemove", pan);
-svg.addEventListener("mouseup", stopPanning);
-svg.addEventListener("mouseleave", stopPanning);
+svg.addEventListener("pointerdown", startPanning);
+svg.addEventListener("pointermove", pan);
+svg.addEventListener("pointerup", stopPanning);
+svg.addEventListener("pointerleave", stopPanning);
 
 svg.addEventListener("contextmenu", function(evt) {
     evt.preventDefault();
